@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ejemplo 1</title>
+    <title>TP2 - Uriel Fischman</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -14,9 +14,15 @@
 
 
 <div class="container-fluid mt-3" id="app">
-    <input type="text" class="form-control" v-model="criterioDeBusqueda"
-        placeholder="Ingresar un criterio de busqueda...">
+    <input type="text" class="form-control" v-model="busquedaNombre"
+        placeholder="Ingresar las letras del nombre...">
     <br>
+    <input type="text" class="form-control" v-model="busquedaDni"
+        placeholder="Ingresar los numeros del dni...">
+    <br>
+    <div v-if="!cumplenLengthMinimo()" class="alert alert-warning" role="alert">
+        Los filtros no funcionan ya que no has ingresado al menos 3 caracteres en estos!
+    </div>
     <div class="card-deck m-0">
         <div class="row">
             <div class="col" v-for="persona in personasFiltradas">
@@ -29,8 +35,7 @@
                 </div>
             </div>
         </div>
-    </div>
-
+    </div> 
 </div>
 
 </html>
@@ -39,7 +44,8 @@
     new Vue({
         el: '#app',
         data: {
-            criterioDeBusqueda: '',
+            busquedaNombre: '',
+            busquedaDni: '',
             //Aquí, en este array es donde tienen que agregar su información
             personas: [
                 {
@@ -49,25 +55,46 @@
                     dni: "20442873"
                 },
                 {
-                    nombre: "...",
-                    apellido: "...",
-                    correo: "...",
-                    dni: "..."
+                    nombre: "Uriel",
+                    apellido: "Fischman",
+                    correo: "uriel.fischman@gmail.com",
+                    dni: "44759158"
+                },
+                {
+                    nombre: "Gabriel",
+                    apellido: "Rechez",
+                    correo: "grechez@gmail.com",
+                    dni: "23873447"
+                },
+                {
+                    nombre: "Ariel",
+                    apellido: "Berman",
+                    correo: "ariber@gmail.com",
+                    dni: "32915428"
                 },
             ]
 
         },
         computed: {
             personasFiltradas() {
-                return this.personas.filter((persona) => {
-                    let registroCompleto = `${persona.nombre} ${persona.apellido} ${persona.dni} ${persona.correo}`
-                    return registroCompleto.toLowerCase().includes(this.criterioDeBusqueda.toLowerCase())
+                if(this.cumplenLengthMinimo()){
+                    return this.personas.filter((persona) => {
+                    let registroNombreApellido = `${persona.nombre} ${persona.apellido}`
+                    let registroDni = `${persona.dni}`
+                    return registroNombreApellido.toLowerCase().includes(this.busquedaNombre.toLowerCase()) && registroDni.includes(this.busquedaDni) 
                 });
-            }
+                }else{
+                    return this.personas
+                }
+            },
         },
         methods: {
             getNombreCompleto(persona) {
                 return `${persona.nombre} ${persona.apellido}`
+            },
+            cumplenLengthMinimo() {
+                let minLength = 3
+                return this.busquedaNombre.length >= minLength && this.busquedaDni.length >= minLength
             }
         }
     });
